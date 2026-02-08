@@ -81,12 +81,14 @@ instance Ord ArithExp' where
 -- (a -> b) is the function you want to map
 -- f a is a container with objects of type a
 -- result is a container of type b.
+-- https://stackoverflow.com/questions/13134825/how-do-functors-work-in-haskell
 class Functor' f where 
    fmap' :: (a -> b) -> f a -> f b
 
 -- tree of values of a
 data BST a = Empty | Node (BST a) a (BST a)
 
+-- https://stackoverflow.com/questions/60030467/example-of-violating-the-functor-rules-in-haskell
 --Define a Functor instance for BST.  
 instance Show a => Show (BST a) where
   show :: BST a -> String
