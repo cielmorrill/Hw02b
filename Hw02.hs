@@ -5,6 +5,7 @@
 --}
 
 module Hw02 where
+import System.Win32 (xBUTTON1)
 
 data ArithExp =
     Num Int
@@ -37,7 +38,31 @@ instance Eq ArithExp where
 -- interpreter, which takes an arithmetic expression and evaluates it to a number.
 --  eval (Plus (Num 42) (Neg (Num 42))) should yield 0
 eval :: ArithExp -> Int
-eval = undefined
+eval n = case n of
+  Num x -> x
+  Plus a b -> eval a + eval b
+  Times a b -> eval a * eval b
+  Neg a -> - (eval a)
+
+data ArithExp' =
+    Num' Int
+  | Plus' ArithExp' ArithExp'
+  | Sub' ArithExp' ArithExp'
+  | Times' ArithExp' ArithExp'
+  | Neg' ArithExp'
+  deriving Show
+
+eval' :: ArithExp' -> Int
+eval' = eval . translate
+
+translate :: ArithExp' -> ArithExp
+translate n = case n of
+  Num' n -> Num n
+  Plus' a b -> Plus (translate a) (translate b)
+  Sub' a b -> Plus (translate a) (Neg (translate b))
+  Times' a b -> Times (translate a) (translate b)
+  Neg' a -> Neg (translate a)
+
 
 -- Tests: un-comment as you go ---------------
 
@@ -59,16 +84,15 @@ main = do
     putStr "(b) Should be False: " 
     print $ (Plus (Num 3) (Num 4)) == (Num 7)
 
-    {-
     putStr "\n(c) Should be 5: "
     print $ eval (Plus (Num 1) (Num 4))
-
     putStr "(c) Should be 0: "
     print $ eval (Plus (Num 42) (Neg (Num 42)))
 
     putStr "\n(d) Should be 2: "
     print $ eval' (Sub' (Num' 5) (Num' 3))
 
+    {-
     putStr "(e) Should be False: " 
     print $ (Num' 2) == (Num' 3)
     putStr "(e) Should be True: " 
