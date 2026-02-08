@@ -12,9 +12,28 @@ data ArithExp =
   | Times ArithExp ArithExp
   | Neg ArithExp
 
-
 -- Put your code here -------------------------
 
+-- print a parseable expression
+-- For example, show (Num 5) should yield the string "Num 5"
+-- show (Neg (Plus (Num 1) (Num 1))) should yield the string "Neg (Plus (Num 1) (Num 1))"
+instance Show ArithExp where
+  show :: ArithExp -> String
+  show n = case n of
+    Num x -> "Num " ++ show x
+    Plus a b -> "Plus (" ++ show a ++ ") (" ++ show b ++ ")"
+    Times a b -> "Times (" ++ show a ++ ") (" ++ show b ++ ")"
+    Neg a -> "Neg (" ++ show a ++ ")"
+
+  
+instance Eq ArithExp where
+  (==) :: ArithExp -> ArithExp -> Bool
+  e1 == e2 = undefined
+
+-- interpreter, which takes an arithmetic expression and evaluates it to a number.
+--  eval (Plus (Num 42) (Neg (Num 42))) should yield 0
+eval :: ArithExp -> Int
+eval = undefined
 
 -- Tests: un-comment as you go ---------------
 
@@ -26,6 +45,8 @@ main = do
     print $ Num 5
     putStr "(a) Should be Neg (Plus (Num 1) (Num 1)): "
     print $ (Neg (Plus (Num 1) (Num 1)))
+
+    {-
 
     putStr "\n(b) Should be True: " 
     print$ (Num 3) == (Num 3)
@@ -61,3 +82,6 @@ main = do
     putStr "\n(b) Should be: Branch [Leaf 1,Branch [Leaf 4,Leaf 9]]: "
     print $ fmap (\x -> x*x) (Branch [Leaf 1, (Branch [(Leaf 2), (Leaf 3)])])
     putStrLn ""
+
+
+    -}
