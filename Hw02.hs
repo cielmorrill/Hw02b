@@ -25,10 +25,14 @@ instance Show ArithExp where
     Times a b -> "Times (" ++ show a ++ ") (" ++ show b ++ ")"
     Neg a -> "Neg (" ++ show a ++ ")"
 
-  
+
 instance Eq ArithExp where
   (==) :: ArithExp -> ArithExp -> Bool
-  e1 == e2 = undefined
+  Num x == Num y = x == y
+  Plus a1 b1 == Plus a2 b2 = a1 == a2 && b1 == b2
+  Times a1 b1 == Times a2 b2 = a1 == a2 && b1 == b2
+  Neg a1 == Neg a2 = a1 == a2
+  _ == _ = False
 
 -- interpreter, which takes an arithmetic expression and evaluates it to a number.
 --  eval (Plus (Num 42) (Neg (Num 42))) should yield 0
@@ -44,9 +48,7 @@ main = do
     putStr "\n(a) Should be Num 5: "
     print $ Num 5
     putStr "(a) Should be Neg (Plus (Num 1) (Num 1)): "
-    print $ (Neg (Plus (Num 1) (Num 1)))
-
-    {-
+    print $ Neg (Plus (Num 1) (Num 1))
 
     putStr "\n(b) Should be True: " 
     print$ (Num 3) == (Num 3)
@@ -56,6 +58,8 @@ main = do
     print$ (Plus (Num 3) (Num 4)) == (Plus (Num 3) (Num 4))
     putStr "(b) Should be False: " 
     print $ (Plus (Num 3) (Num 4)) == (Num 7)
+
+    {-
     putStr "\n(c) Should be 5: "
     print $ eval (Plus (Num 1) (Num 4))
 
