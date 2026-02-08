@@ -77,6 +77,36 @@ instance Ord ArithExp' where
   compare e1 e2 = compare (eval' e1) (eval' e2)
 
 
+-- PART 2
+-- (a -> b) is the function you want to map
+-- f a is a container with objects of type a
+-- result is a container of type b.
+class Functor' f where 
+   fmap' :: (a -> b) -> f a -> f b
+
+-- tree of values of a
+data BST a = Empty | Node (BST a) a (BST a)
+
+--Define a Functor instance for BST.  
+instance Show a => Show (BST a) where
+  show :: BST a -> String
+  show Empty = "Empty"
+  show (Node l x r) = "(" ++ show l ++ ") (" ++ show x ++ ") (" ++ show r ++ ")"
+
+instance Functor' BST where
+  fmap' :: (a -> b) -> BST a -> BST b
+  fmap' _ Empty = Empty
+  fmap' f (Node l x r) =
+    Node (fmap' f l) (f x) (fmap' f r)
+
+-- n-ary tree, trie, or rose tree data structure is a tree with an arbitrary number of children at each node
+data RoseTree a = Leaf a | Branch [RoseTree a] deriving (Eq, Show)
+
+instance Functor' RoseTree where
+  fmap' :: (a -> b) -> RoseTree a -> RoseTree b
+  fmap' f (Leaf a) = Leaf (f a)
+  fmap' f (Branch b) = Branch (map (fmap' f) b)
+
 -- Tests: un-comment as you go ---------------
 
 main = do
@@ -115,15 +145,14 @@ main = do
     putStr "(e) Should be True: " 
     print $ (Plus' (Num' 1) (Num' 2)) < (Times' (Num' 2) (Num' 3))
 
-    {-
+
+
     putStrLn "\nProblem 2: Functors ------------------------------------------------\n"
     putStr "\n(a) Should be ( (4) 6 (8) ): " 
-    print $ fmap (\n -> 2 * n)(Node (Node Empty 2 Empty) 3 (Node Empty 4 Empty))
+    print $ fmap' (\n -> 2 * n)(Node (Node Empty 2 Empty) 3 (Node Empty 4 Empty))
+
     putStr "\n(b) Should be Branch [Leaf 2,Leaf 3]: "
     print $ Branch [(Leaf 2), (Leaf 3)]
     putStr "\n(b) Should be: Branch [Leaf 1,Branch [Leaf 4,Leaf 9]]: "
-    print $ fmap (\x -> x*x) (Branch [Leaf 1, (Branch [(Leaf 2), (Leaf 3)])])
+    print $ fmap' (\x -> x*x) (Branch [Leaf 1, (Branch [(Leaf 2), (Leaf 3)])])
     putStrLn ""
-
-
-    -}
