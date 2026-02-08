@@ -64,6 +64,19 @@ translate n = case n of
   Neg' a -> Neg (translate a)
 
 
+--  non-standard Eq instance for ArithExp', where e1 == e2 iff they evaluate to the same number,
+-- e.g., (Num' 2) == (Plus' (Num' 1) (Num' 1)) should return `True.
+instance Eq ArithExp' where
+  (==) :: ArithExp' -> ArithExp' -> Bool
+  Num' x == Num' y = x == y
+  eq3 == eq4 = eval' (eq3) == eval' (eq4)
+
+--  e1 < e2 iff e1 evaluates to a lower number than e2, etc.
+instance Ord ArithExp' where
+  compare :: ArithExp' -> ArithExp' -> Ordering
+  compare e1 e2 = compare (eval' e1) (eval' e2)
+
+
 -- Tests: un-comment as you go ---------------
 
 main = do
@@ -92,16 +105,17 @@ main = do
     putStr "\n(d) Should be 2: "
     print $ eval' (Sub' (Num' 5) (Num' 3))
 
-    {-
     putStr "(e) Should be False: " 
     print $ (Num' 2) == (Num' 3)
     putStr "(e) Should be True: " 
     print $ (Plus' (Num' 1) (Num' 2)) == (Num' 3)
+
     putStr "(e) Should be False: " 
     print $ (Num' 2) > (Num' 3)
     putStr "(e) Should be True: " 
     print $ (Plus' (Num' 1) (Num' 2)) < (Times' (Num' 2) (Num' 3))
 
+    {-
     putStrLn "\nProblem 2: Functors ------------------------------------------------\n"
     putStr "\n(a) Should be ( (4) 6 (8) ): " 
     print $ fmap (\n -> 2 * n)(Node (Node Empty 2 Empty) 3 (Node Empty 4 Empty))
